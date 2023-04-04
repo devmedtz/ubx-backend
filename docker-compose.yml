@@ -1,52 +1,6 @@
 version: '3.8'
 
 services:
-  ubx-app:
-    container_name: ubx-app
-    image: ubx-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: "php artisan serve --host=0.0.0.0 --port=8090"
-    restart: unless-stopped
-    depends_on:
-      - ubx_db
-    ports:
-      - "8090:8090"
-    volumes:
-      - ubx-volume:/ubx/app/public/uploads:rw
-    networks:
-      - ubx-net
-
-  ubx-queue:
-    container_name: ubx-queue
-    image: ubx-queue
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: 'php artisan queue:work'
-    restart: unless-stopped
-    depends_on:
-      - ubx_db
-      - ubx-rabbitmq
-      - ubx-app
-    networks:
-      - ubx-net
-
-  ubx_db:
-    image: mariadb:10.8
-    container_name: ubx-db
-    restart: always
-    environment:
-      MARIADB_DATABASE: ${DB_DATABASE}
-      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - ${DOCKER_MYSQL_PORTS}
-    volumes:
-      - ubx-volume:/var/lib/mysql
-    networks:
-      - ubx-net
-
   ubx-rabbitmq:
     container_name: ubx-rabbitmq
     hostname: rabbitmq
@@ -62,10 +16,6 @@ services:
       - ${RABBITMQ_UI_PORTS}
     networks:
       - ubx-net
-
-volumes:
-  ubx-volume:
-    external: true
 
 networks:
   ubx-net:
